@@ -14,10 +14,6 @@ mongoose
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello from TaskFlowX backend!");
-});
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
