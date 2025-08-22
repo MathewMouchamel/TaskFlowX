@@ -16,9 +16,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.96 }}
-        className="roboto-condensed-custom px-8 py-3 border border-white text-white text-2xl rounded-full transition-colors duration-200 cursor-pointer"
+        className="roboto-condensed-custom px-8 py-3 border border-white text-white text-2xl rounded-full transition-colors duration-400 cursor-pointer hover:scale-105 hover:bg-white hover:text-black"
       >
         Start
       </motion.button>
