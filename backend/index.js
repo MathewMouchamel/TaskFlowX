@@ -14,6 +14,19 @@ mongoose
 
 app.use(express.json());
 
+// Access the "tasks" collection directly without a schema
+app.get("/tasks", async (req, res) => {
+  try {
+    const tasks = await mongoose.connection.db
+      .collection("tasks")
+      .find({})
+      .toArray();
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch tasks" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
