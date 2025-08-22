@@ -29,7 +29,10 @@ app.get("/tasks", async (req, res) => {
 
 app.post("/tasks", async (req, res) => {
   try {
+    console.log("hello");
     const { title, completed = false } = req.body;
+    console.log("hey");
+    console.log(req.body);
     const result = await mongoose.connection.db
       .collection("tasks")
       .insertOne({ title, completed });
