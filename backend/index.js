@@ -27,6 +27,24 @@ app.get("/tasks", async (req, res) => {
   }
 });
 
+app.post("/tasks", async (req, res) => {
+  try {
+    const { title, completed = false } = req.body;
+    const result = await mongoose.connection.db
+      .collection("tasks")
+      .insertOne({ title, completed });
+    res
+      .status(201)
+      .json(
+        result.ops
+          ? result.ops[0]
+          : { title, completed, _id: result.insertedId }
+      );
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create task" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
