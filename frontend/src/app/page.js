@@ -18,7 +18,7 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.96 }}
-        className="roboto-condensed-custom px-8 py-3 border border-white text-white text-2xl rounded transition-colors duration-200 cursor-pointer"
+        className="roboto-condensed-custom px-8 py-3 border border-white text-white text-2xl rounded-full transition-colors duration-200 cursor-pointer"
       >
         Start
       </motion.button>
