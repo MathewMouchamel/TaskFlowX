@@ -1,14 +1,14 @@
 import { Worker } from "bullmq";
-import { reminderQueue } from "./reminderQueue.js"; // your queue setup file
+import { reminderQueue } from "./reminderQueue.js";
 
-// Define your job processor
+// Define job processor
 const reminderWorker = new Worker("reminderQueue", async (job) => {
   // job.data contains userId and taskId
   const { userId, taskId } = job.data;
 
-  // TODO: Replace with your real notification logic
+  // TODO: Replace with  real notification logic
   console.log(`Send reminder to user ${userId} for task ${taskId}`);
-  // e.g. send a WebSocket notification, email, push notification, etc.
+  // send a WebSocket notification...
 });
 
 reminderWorker.on("completed", (job) => {
