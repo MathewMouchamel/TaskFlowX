@@ -17,8 +17,9 @@ const client = createClient({
   },
 });
 client.on("error", (err) => console.log("Redis Client Error", err));
-await client.connect();
-initializeQueue(client);
+await client.connect().then(() => {
+  initializeQueue(client);
+});
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
