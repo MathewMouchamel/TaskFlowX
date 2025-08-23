@@ -2,8 +2,14 @@ import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import admin from "firebase-admin";
 
 dotenv.config();
+
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  projectId: "taskflowx-70787"
+});
 
 const app = express();
 const PORT = process.env.PORT;
@@ -15,6 +21,22 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
+
+const verifyToken = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
 
 const TaskSchema = new mongoose.Schema(
   {
@@ -39,6 +61,10 @@ const TaskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -47,16 +73,16 @@ const TaskSchema = new mongoose.Schema(
 
 const Task = mongoose.model("Task", TaskSchema, "tasks");
 
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    const tasks = await Task.find({ userId: req.user.uid }).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 });
 
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", verifyToken, async (req, res) => {
   try {
     const { title, description, dueDate, priority, completed } = req.body;
 
@@ -66,6 +92,7 @@ app.post("/tasks", async (req, res) => {
       dueDate,
       priority,
       completed,
+      userId: req.user.uid,
     });
 
     const savedTask = await task.save();
@@ -75,19 +102,19 @@ app.post("/tasks", async (req, res) => {
   }
 });
 
-app.put("/tasks/:id", async (req, res) => {
+app.put("/tasks/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, dueDate, priority, completed } = req.body;
 
-    const updatedTask = await Task.findByIdAndUpdate(
-      id,
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: id, userId: req.user.uid },
       { title, description, dueDate, priority, completed },
       { new: true, runValidators: true }
     );
 
     if (!updatedTask) {
-      return res.status(404).json({ error: "Task not found" });
+      return res.status(404).json({ error: "Task not found or unauthorized" });
     }
 
     res.json(updatedTask);
@@ -96,14 +123,14 @@ app.put("/tasks/:id", async (req, res) => {
   }
 });
 
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedTask = await Task.findByIdAndDelete(id);
+    const deletedTask = await Task.findOneAndDelete({ _id: id, userId: req.user.uid });
 
     if (!deletedTask) {
-      return res.status(404).json({ error: "Task not found" });
+      return res.status(404).json({ error: "Task not found or unauthorized" });
     }
 
     res.json({ message: "Task deleted successfully", task: deletedTask });
