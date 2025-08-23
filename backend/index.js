@@ -103,6 +103,15 @@ app.get("/tasks", verifyToken, async (req, res) => {
       dueDate: { $gte: now, $lte: twoDaysFromNow },
     }).sort({ createdAt: -1 });
 
+    // Add jobs to the queue for each task
+    for (const task of tasksDue) {
+      await scheduleReminder({
+        userId: req.user.uid,
+        taskId: task._id,
+        remindAt: task.dueDate,
+      });
+    }
+
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tasks" });
