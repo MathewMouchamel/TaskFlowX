@@ -25,7 +25,11 @@ export async function scheduleReminder({ userId, taskId }) {
     throw new Error("Queue not initialized. Call initializeQueue first.");
   }
   try {
-    await reminderQueue.add("sendReminder", { userId, taskId });
+    await reminderQueue.add(
+      "sendReminder",
+      { userId, taskId },
+      { jobId: `${userId}:${taskId}` }
+    );
     console.log("Reminder scheduled for task:", taskId);
   } catch (error) {
     console.error("Failed to schedule reminder:", error);

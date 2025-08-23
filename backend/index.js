@@ -25,10 +25,6 @@ admin.initializeApp({
   projectId: "taskflowx-70787",
 });
 
-await client.set("x", "bar");
-const result = await client.get("foo");
-console.log(result); // >>> bar
-
 const app = express();
 const PORT = process.env.PORT;
 
