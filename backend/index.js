@@ -20,6 +20,7 @@ const client = createClient({
 client.on("error", (err) => console.log("Redis Client Error", err));
 await client.connect().then(() => {
   initializeQueue(client);
+  initializeWorker(client);
 });
 
 admin.initializeApp({
