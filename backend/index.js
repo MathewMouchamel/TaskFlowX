@@ -4,7 +4,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
 import { createClient } from "redis";
-import { initializeReminderStorage, storeReminder, showUserReminders, removeReminder } from "./reminderStorage.js";
+import {
+  initializeReminderStorage,
+  storeReminder,
+  showUserReminders,
+  removeReminder,
+} from "./reminderStorage.js";
 
 dotenv.config();
 
@@ -110,7 +115,7 @@ app.get("/tasks", verifyToken, async (req, res) => {
         taskId: task._id,
         taskTitle: task.title,
         dueDate: task.dueDate,
-        priority: task.priority
+        priority: task.priority,
       });
     }
 
@@ -166,14 +171,14 @@ app.put("/tasks/:id", verifyToken, async (req, res) => {
       // Check if task is due within 2 days and store/update reminder
       const now = new Date();
       const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
-      
+
       if (updatedTask.dueDate >= now && updatedTask.dueDate <= twoDaysFromNow) {
         await storeReminder({
           userId: req.user.uid,
           taskId: updatedTask._id,
           taskTitle: updatedTask.title,
           dueDate: updatedTask.dueDate,
-          priority: updatedTask.priority
+          priority: updatedTask.priority,
         });
       }
     }
