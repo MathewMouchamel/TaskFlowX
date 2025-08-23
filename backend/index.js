@@ -153,6 +153,12 @@ app.put("/tasks/:id", verifyToken, async (req, res) => {
       return res.status(404).json({ error: "Task not found or unauthorized" });
     }
 
+    // Schedule a reminder if the task is completed
+    if (completed) {
+      console.log("Scheduling reminder for completed task:", updatedTask._id);
+      await scheduleReminder({ userId: req.user.uid, taskId: updatedTask._id });
+    }
+
     res.json(updatedTask);
   } catch (err) {
     res.status(400).json({ error: err.message });

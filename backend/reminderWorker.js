@@ -3,6 +3,7 @@ import { Worker } from "bullmq";
 export const initializeWorker = (redisClient) => {
   const { host, port } = redisClient.options.socket;
   const { username, password } = redisClient.options;
+  console.log("Worker started");
   const worker = new Worker(
     "reminderQueue",
     async (job) => {
