@@ -4,8 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
 import { createClient } from "redis";
-import { initializeQueue, scheduleReminder } from "./reminderQueue.js";
-import { initializeWorker } from "./reminderWorker.js";
+import { initializeReminderStorage, storeReminder, showUserReminders, removeReminder } from "./reminderStorage.js";
 
 dotenv.config();
 
@@ -18,9 +17,9 @@ const client = createClient({
   },
 });
 client.on("error", (err) => console.log("Redis Client Error", err));
+
 await client.connect().then(() => {
-  initializeQueue(client);
-  initializeWorker(client);
+  initializeReminderStorage(client);
 });
 
 admin.initializeApp({
@@ -104,13 +103,19 @@ app.get("/tasks", verifyToken, async (req, res) => {
       dueDate: { $gte: now, $lte: twoDaysFromNow },
     }).sort({ createdAt: -1 });
 
-    // Add jobs to the queue for each task
+    // Store reminders directly in Redis for each task
     for (const task of tasksDue) {
-      await scheduleReminder({
+      await storeReminder({
         userId: req.user.uid,
         taskId: task._id,
+        taskTitle: task.title,
+        dueDate: task.dueDate,
+        priority: task.priority
       });
     }
+
+    // Show active reminders on every website launch/GET request
+    await showUserReminders(req.user.uid);
 
     res.json(tasks);
   } catch (err) {
@@ -153,9 +158,24 @@ app.put("/tasks/:id", verifyToken, async (req, res) => {
       return res.status(404).json({ error: "Task not found or unauthorized" });
     }
 
-    // Schedule a reminder if the task is completed
+    // Remove reminder if task is completed, or store/update if not completed and due soon
     if (completed) {
-      await scheduleReminder({ userId: req.user.uid, taskId: updatedTask._id });
+      await removeReminder(req.user.uid, updatedTask._id);
+      console.log(`Task "${updatedTask.title}" completed - reminder removed`);
+    } else if (updatedTask.dueDate) {
+      // Check if task is due within 2 days and store/update reminder
+      const now = new Date();
+      const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+      
+      if (updatedTask.dueDate >= now && updatedTask.dueDate <= twoDaysFromNow) {
+        await storeReminder({
+          userId: req.user.uid,
+          taskId: updatedTask._id,
+          taskTitle: updatedTask.title,
+          dueDate: updatedTask.dueDate,
+          priority: updatedTask.priority
+        });
+      }
     }
 
     res.json(updatedTask);
