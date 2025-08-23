@@ -3,12 +3,22 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
+import { createClient } from "redis";
 
 dotenv.config();
 
+const client = createClient({
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  },
+});
+
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
-  projectId: "taskflowx-70787"
+  projectId: "taskflowx-70787",
 });
 
 const app = express();
@@ -24,17 +34,17 @@ app.use(express.json());
 
 const verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
+      return res.status(401).json({ error: "No token provided" });
     }
-    
+
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error('Token verification failed:', error);
-    res.status(401).json({ error: 'Invalid token' });
+    console.error("Token verification failed:", error);
+    res.status(401).json({ error: "Invalid token" });
   }
 };
 
@@ -75,7 +85,9 @@ const Task = mongoose.model("Task", TaskSchema, "tasks");
 
 app.get("/tasks", verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.user.uid }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ userId: req.user.uid }).sort({
+      createdAt: -1,
+    });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tasks" });
@@ -127,7 +139,10 @@ app.delete("/tasks/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedTask = await Task.findOneAndDelete({ _id: id, userId: req.user.uid });
+    const deletedTask = await Task.findOneAndDelete({
+      _id: id,
+      userId: req.user.uid,
+    });
 
     if (!deletedTask) {
       return res.status(404).json({ error: "Task not found or unauthorized" });
