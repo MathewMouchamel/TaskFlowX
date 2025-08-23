@@ -95,6 +95,7 @@ export async function showUserReminders(userId) {
             weekday: "short",
             month: "short",
             day: "numeric",
+            timeZone: "UTC",
           });
 
           if (daysDiff < 0) {
