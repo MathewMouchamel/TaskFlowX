@@ -62,7 +62,12 @@ export default function Home() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString();
+    // Fix timezone issue by parsing the date correctly
+    const date = new Date(dateString);
+    // Add timezone offset to prevent day-behind issue
+    const timeZoneOffset = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() + timeZoneOffset);
+    return localDate.toLocaleDateString();
   };
 
   const deleteTask = async (taskId) => {
@@ -112,7 +117,7 @@ export default function Home() {
     setEditForm({
       title: task.title,
       description: task.description || "",
-      dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
       priority: task.priority,
     });
   };
