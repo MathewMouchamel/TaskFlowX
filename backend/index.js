@@ -108,7 +108,6 @@ app.get("/tasks", verifyToken, async (req, res) => {
       await scheduleReminder({
         userId: req.user.uid,
         taskId: task._id,
-        remindAt: task.dueDate,
       });
     }
 

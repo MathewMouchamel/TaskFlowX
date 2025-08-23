@@ -9,12 +9,5 @@ import { reminderQueue } from "./reminderQueue.js";
  */
 
 export async function scheduleReminder({ userId, taskId, remindAt }) {
-  const remindTime = new Date(remindAt).getTime();
-  const now = Date.now();
-  const delay = remindTime - now;
-
-  // Only schedule if the reminder is in the future
-  if (delay > 0) {
-    await reminderQueue.add("sendReminder", { userId, taskId }, { delay });
-  }
+  await reminderQueue.add("sendReminder", { userId, taskId });
 }
