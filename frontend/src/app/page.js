@@ -198,7 +198,7 @@ export default function Home() {
           <h1 className="roboto-condensed-custom text-4xl">TaskFlowX</h1>
           <div className="flex items-center gap-4">
             <span className="roboto-condensed-custom text-lg">
-              Welcome, {currentUser.displayName}
+              {currentUser.displayName}
             </span>
             {currentUser.photoURL ? (
               <img
