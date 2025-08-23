@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import admin from "firebase-admin";
 import { createClient } from "redis";
 import { initializeQueue, scheduleReminder } from "./reminderQueue.js";
+import { initializeWorker } from "./reminderWorker.js";
 
 dotenv.config();
 
