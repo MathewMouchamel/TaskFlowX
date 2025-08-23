@@ -51,9 +51,9 @@ export default function Home() {
       const response = await fetch(`http://localhost:3500/tasks/${taskId}`, {
         method: "DELETE",
       });
-      
+
       if (response.ok) {
-        setTasks(tasks.filter(task => task._id !== taskId));
+        setTasks(tasks.filter((task) => task._id !== taskId));
       }
     } catch (error) {
       console.error("Failed to delete task:", error);
@@ -69,13 +69,13 @@ export default function Home() {
         },
         body: JSON.stringify({
           ...task,
-          completed: !task.completed
+          completed: !task.completed,
         }),
       });
-      
+
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks(tasks.map(t => t._id === task._id ? updatedTask : t));
+        setTasks(tasks.map((t) => (t._id === task._id ? updatedTask : t)));
       }
     } catch (error) {
       console.error("Failed to toggle task completion:", error);
@@ -87,8 +87,8 @@ export default function Home() {
     setEditForm({
       title: task.title,
       description: task.description || "",
-      dueDate: task.dueDate ? task.dueDate.split('T')[0] : "",
-      priority: task.priority
+      dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+      priority: task.priority,
     });
   };
 
@@ -106,13 +106,13 @@ export default function Home() {
         },
         body: JSON.stringify({
           ...editForm,
-          dueDate: editForm.dueDate || null
+          dueDate: editForm.dueDate || null,
         }),
       });
-      
+
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks(tasks.map(t => t._id === taskId ? updatedTask : t));
+        setTasks(tasks.map((t) => (t._id === taskId ? updatedTask : t)));
         setEditingTask(null);
         setEditForm({});
       }
@@ -130,10 +130,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-black text-white p-6 pt-20">
       <div className="max-w-7xl mx-auto">
         <h1 className="roboto-condensed-custom text-4xl mb-8 text-center">
-          TaskFlowX Dashboard
+          TaskFlowX
         </h1>
 
         <div className="flex mb-6 border-b border-gray-700">
@@ -206,7 +206,12 @@ export default function Home() {
                       {editingTask === task._id ? (
                         <select
                           value={editForm.priority}
-                          onChange={(e) => setEditForm({...editForm, priority: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              priority: e.target.value,
+                            })
+                          }
                           className="bg-gray-700 text-white px-2 py-1 rounded roboto-condensed-custom"
                         >
                           <option value="low">Low</option>
@@ -228,7 +233,9 @@ export default function Home() {
                         <input
                           type="text"
                           value={editForm.title}
-                          onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, title: e.target.value })
+                          }
                           className="bg-gray-700 text-white px-2 py-1 rounded w-full roboto-condensed-custom"
                         />
                       ) : (
@@ -240,12 +247,19 @@ export default function Home() {
                         <input
                           type="text"
                           value={editForm.description}
-                          onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              description: e.target.value,
+                            })
+                          }
                           className="bg-gray-700 text-white px-2 py-1 rounded w-full roboto-condensed-custom"
                           placeholder="Description"
                         />
                       ) : (
-                        <span className="truncate block">{task.description || "-"}</span>
+                        <span className="truncate block">
+                          {task.description || "-"}
+                        </span>
                       )}
                     </td>
                     <td className="p-3 roboto-condensed-custom">
@@ -253,7 +267,12 @@ export default function Home() {
                         <input
                           type="date"
                           value={editForm.dueDate}
-                          onChange={(e) => setEditForm({...editForm, dueDate: e.target.value})}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              dueDate: e.target.value,
+                            })
+                          }
                           className="bg-gray-700 text-white px-2 py-1 rounded roboto-condensed-custom"
                         />
                       ) : (
@@ -278,8 +297,16 @@ export default function Home() {
                           } hover:bg-green-500 transition-colors`}
                         >
                           {task.completed && (
-                            <svg className="w-3 h-3 text-white mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            <svg
+                              className="w-3 h-3 text-white mx-auto"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
                             </svg>
                           )}
                         </button>
@@ -312,8 +339,18 @@ export default function Home() {
                               className="text-blue-400 hover:text-blue-300 p-1"
                               title="Edit task"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
                               </svg>
                             </button>
                             <button
@@ -321,8 +358,18 @@ export default function Home() {
                               className="text-red-400 hover:text-red-300 p-1"
                               title="Delete task"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
                               </svg>
                             </button>
                           </>
