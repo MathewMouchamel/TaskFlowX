@@ -16,6 +16,7 @@ const client = createClient({
   },
 });
 client.on("error", (err) => console.log("Redis Client Error", err));
+await client.connect();
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
