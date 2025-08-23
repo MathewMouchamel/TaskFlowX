@@ -35,3 +35,5 @@ export async function scheduleReminder({ userId, taskId }) {
     throw error;
   }
 }
+
+export { reminderQueue };
