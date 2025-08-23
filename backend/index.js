@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+app.use(cors());
 app.use(express.json());
 
 const TaskSchema = new mongoose.Schema(
