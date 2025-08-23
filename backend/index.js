@@ -155,7 +155,6 @@ app.put("/tasks/:id", verifyToken, async (req, res) => {
 
     // Schedule a reminder if the task is completed
     if (completed) {
-      console.log("Scheduling reminder for completed task:", updatedTask._id);
       await scheduleReminder({ userId: req.user.uid, taskId: updatedTask._id });
     }
 
