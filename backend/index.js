@@ -91,9 +91,18 @@ const Task = mongoose.model("Task", TaskSchema, "tasks");
 
 app.get("/tasks", verifyToken, async (req, res) => {
   try {
+    const now = new Date();
+    const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+
     const tasks = await Task.find({ userId: req.user.uid }).sort({
       createdAt: -1,
     });
+
+    const tasksDue = await Task.find({
+      userId: req.user.uid,
+      dueDate: { $gte: now, $lte: twoDaysFromNow },
+    }).sort({ createdAt: -1 });
+
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tasks" });
