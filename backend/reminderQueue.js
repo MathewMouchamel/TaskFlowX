@@ -30,6 +30,7 @@ export async function scheduleReminder({ userId, taskId }) {
       { userId, taskId },
       { jobId: `${userId}:${taskId}` }
     );
+    console.log(`Reminder job scheduled for user ${userId}, task ${taskId}`);
   } catch (error) {
     console.error("Failed to schedule reminder:", error);
     throw error;
