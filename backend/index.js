@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
 import { createClient } from "redis";
+import { initializeQueue, scheduleReminder } from "./reminderQueue.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const client = createClient({
 });
 client.on("error", (err) => console.log("Redis Client Error", err));
 await client.connect();
+initializeQueue(client);
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
