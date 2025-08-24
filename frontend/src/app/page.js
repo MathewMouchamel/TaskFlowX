@@ -118,7 +118,9 @@ export default function Home() {
     setEditForm({
       title: task.title,
       description: task.description || "",
-      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
+      dueDate: task.dueDate
+        ? new Date(task.dueDate).toISOString().split("T")[0]
+        : "",
       priority: task.priority,
     });
   };
@@ -200,7 +202,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 pt-10">
           <h1 className="roboto-condensed-custom text-4xl">TaskFlowX</h1>
           <div className="flex items-center gap-4">
             <NotificationBell currentUser={currentUser} getToken={getToken} />
