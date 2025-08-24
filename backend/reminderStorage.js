@@ -86,9 +86,19 @@ export async function showUserReminders(userId) {
         let urgencyIcon = "📅";
 
         if (dueDate) {
+          // Use UTC dates to avoid timezone issues
           const today = new Date();
           const due = new Date(dueDate);
-          const timeDiff = due.getTime() - today.getTime();
+
+          // Create UTC dates for comparison (year, month, day only)
+          const todayDate = new Date(
+            Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+          );
+          const dueUTC = new Date(
+            Date.UTC(due.getUTCFullYear(), due.getUTCMonth(), due.getUTCDate())
+          );
+
+          const timeDiff = dueUTC.getTime() - todayDate.getTime();
           const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
           const dueDateStr = due.toLocaleDateString("en-US", {
