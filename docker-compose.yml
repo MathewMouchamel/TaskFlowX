@@ -1,13 +1,10 @@
-# Docker Compose version - specifies the schema version
-version: "3.8"
-
 # Services section - defines all the containers that make up your application
 services:
   # Backend service configuration
   backend:
     # Build the Docker image from the ./backend directory using its Dockerfile
     build: ./backend
-# Map host port 3500 to container port 3500
+    # Map host port 3500 to container port 3500
     ports:
       - "3500:3500"
     # Load environment variables from the backend .env file (should contain cloud DB URLs)
