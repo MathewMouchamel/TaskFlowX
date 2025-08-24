@@ -426,13 +426,13 @@ export default function Home() {
                           <>
                             <button
                               onClick={() => saveEdit(task._id)}
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm roboto-condensed-custom"
+                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm roboto-condensed-custom cursor-pointer"
                             >
                               Save
                             </button>
                             <button
                               onClick={cancelEdit}
-                              className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm roboto-condensed-custom"
+                              className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm roboto-condensed-custom cursor-pointer"
                             >
                               Cancel
                             </button>
