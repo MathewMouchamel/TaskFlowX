@@ -111,9 +111,9 @@ export default function NotificationBell({ currentUser, getToken }) {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       weekday: "short",
-      month: "short", 
+      month: "short",
       day: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     });
   };
 
@@ -221,7 +221,7 @@ export default function NotificationBell({ currentUser, getToken }) {
                       </div>
 
                       <div className="text-sm text-gray-300 roboto-condensed-custom">
-                        {notification.taskTitle} due {formatDueDate(notification.dueDate)}
+                        due {formatDueDate(notification.dueDate)}
                       </div>
                     </div>
 
