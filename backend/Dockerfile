@@ -13,8 +13,8 @@ RUN npm install --production
 # Copy all source code to the container
 COPY . .
 
-# Expose port 3001 to allow external connections
-EXPOSE 3001
+# Expose port 3500 to allow external connections
+EXPOSE 3500
 
 # Start the application using npm start
 CMD ["npm", "start"]
