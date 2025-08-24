@@ -171,3 +171,102 @@ export async function removeReminder(userId, taskId) {
     throw error;
   }
 }
+
+// Get all reminders for a user (for API endpoint)
+export async function getUserNotifications(userId) {
+  if (!isInitialized) {
+    throw new Error("Redis client not initialized. Call initializeReminderStorage first.");
+  }
+  
+  try {
+    const pattern = `reminder:${userId}:*`;
+    const keys = await redisClient.keys(pattern);
+    
+    const notifications = [];
+    
+    for (const key of keys) {
+      try {
+        const reminderJson = await redisClient.get(key);
+        const reminder = JSON.parse(reminderJson);
+        
+        const { taskTitle, dueDate, priority, taskId, createdAt } = reminder;
+        
+        // Calculate days until due and create message
+        let daysUntilDue = null;
+        let message = "Task reminder";
+        
+        if (dueDate) {
+          const today = new Date();
+          const due = new Date(dueDate);
+          const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const dueDateOnly = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+          
+          const timeDiff = dueDateOnly.getTime() - todayDate.getTime();
+          daysUntilDue = Math.round(timeDiff / (1000 * 3600 * 24));
+          
+          if (daysUntilDue < 0) {
+            message = `Task is ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) > 1 ? 's' : ''} overdue!`;
+          } else if (daysUntilDue === 0) {
+            message = "Task is due today!";
+          } else if (daysUntilDue === 1) {
+            message = "Task is due tomorrow!";
+          } else {
+            message = `Task is due in ${daysUntilDue} day${daysUntilDue > 1 ? 's' : ''}`;
+          }
+        }
+        
+        // Check if notification has been read
+        const readKey = `notification_read:${userId}:${taskId}`;
+        const isRead = await redisClient.exists(readKey);
+        
+        notifications.push({
+          id: `${userId}:${taskId}`,
+          taskId,
+          taskTitle: taskTitle || taskId,
+          message,
+          priority: priority || 'medium',
+          dueDate,
+          daysUntilDue,
+          createdAt: createdAt || new Date().toISOString(),
+          read: isRead > 0
+        });
+        
+      } catch (parseError) {
+        console.error(`Error parsing reminder ${key}:`, parseError);
+      }
+    }
+    
+    // Sort by creation date (newest first)
+    notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    return notifications;
+    
+  } catch (error) {
+    console.error("❌ Error retrieving notifications:", error);
+    return [];
+  }
+}
+
+// Mark notifications as read
+export async function markNotificationsAsRead(userId, notificationIds) {
+  if (!isInitialized) {
+    throw new Error("Redis client not initialized. Call initializeReminderStorage first.");
+  }
+  
+  try {
+    const promises = notificationIds.map(notificationId => {
+      // Extract taskId from notification ID (format: userId:taskId)
+      const taskId = notificationId.split(':')[1];
+      const readKey = `notification_read:${userId}:${taskId}`;
+      return redisClient.setEx(readKey, 86400 * 30, 'read'); // Expire after 30 days
+    });
+    
+    await Promise.all(promises);
+    console.log(`Marked ${notificationIds.length} notifications as read for user ${userId}`);
+    
+    return true;
+  } catch (error) {
+    console.error("Failed to mark notifications as read:", error);
+    throw error;
+  }
+}

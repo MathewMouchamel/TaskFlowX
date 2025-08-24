@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Login from "../components/Login";
+import NotificationBell from "../components/NotificationBell";
 
 export default function Home() {
   const { currentUser, logout, getToken } = useAuth();
@@ -202,6 +203,7 @@ export default function Home() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="roboto-condensed-custom text-4xl">TaskFlowX</h1>
           <div className="flex items-center gap-4">
+            <NotificationBell currentUser={currentUser} getToken={getToken} />
             <span className="roboto-condensed-custom text-lg">
               {currentUser.displayName}
             </span>

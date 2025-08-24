@@ -9,6 +9,8 @@ import {
   storeReminder,
   showUserReminders,
   removeReminder,
+  getUserNotifications,
+  markNotificationsAsRead,
 } from "./reminderStorage.js";
 
 dotenv.config();
@@ -205,6 +207,33 @@ app.delete("/tasks/:id", verifyToken, async (req, res) => {
     res.json({ message: "Task deleted successfully", task: deletedTask });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// Notification endpoints
+app.get("/notifications", verifyToken, async (req, res) => {
+  try {
+    const notifications = await getUserNotifications(req.user.uid);
+    res.json(notifications);
+  } catch (error) {
+    console.error("Failed to fetch notifications:", error);
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
+});
+
+app.post("/notifications/mark-read", verifyToken, async (req, res) => {
+  try {
+    const { notificationIds } = req.body;
+    
+    if (!Array.isArray(notificationIds)) {
+      return res.status(400).json({ error: "notificationIds must be an array" });
+    }
+    
+    await markNotificationsAsRead(req.user.uid, notificationIds);
+    res.json({ success: true, message: "Notifications marked as read" });
+  } catch (error) {
+    console.error("Failed to mark notifications as read:", error);
+    res.status(500).json({ error: "Failed to mark notifications as read" });
   }
 });
 
