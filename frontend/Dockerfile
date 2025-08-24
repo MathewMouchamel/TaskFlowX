@@ -1,5 +1,5 @@
 # Use Node.js LTS version 18 with Alpine Linux (lightweight)
-FROM node:18-alpine
+FROM node:24
 
 # Set working directory inside the container
 WORKDIR /app
