@@ -18,6 +18,3 @@ services:
     # Map host port 3000 to container port 3000
     ports:
       - "3000:3000"
-    # Load environment variables from the frontend .env file
-    env_file:
-      - ./frontend/.env
