@@ -10,13 +10,9 @@ services:
     # Map host port 3001 to container port 3001
     ports:
       - "3001:3001"
-    # Load environment variables from the backend .env file
+    # Load environment variables from the backend .env file (should contain cloud DB URLs)
     env_file:
       - ./backend/.env
-    # Wait for mongo and redis services to start before starting backend
-    depends_on:
-      - mongo
-      - redis
 
   # Frontend service configuration
   frontend:
@@ -28,31 +24,3 @@ services:
     # Load environment variables from the frontend .env file
     env_file:
       - ./frontend/.env
-
-  # MongoDB database service
-  mongo:
-    # Use the official MongoDB version 6 image from Docker Hub
-    image: mongo:6
-    # Always restart the container if it stops
-    restart: always
-    # Map host port 27017 to container port 27017 (MongoDB default)
-    ports:
-      - "27017:27017"
-    # Mount a named volume to persist MongoDB data
-    volumes:
-      - mongo-data:/data/db
-
-  # Redis cache/queue service
-  redis:
-    # Use the official Redis version 7 image from Docker Hub
-    image: redis:7
-    # Always restart the container if it stops
-    restart: always
-    # Map host port 6379 to container port 6379 (Redis default)
-    ports:
-      - "6379:6379"
-
-# Volumes section - defines named volumes for data persistence
-volumes:
-  # Named volume to persist MongoDB data across container restarts
-  mongo-data:
