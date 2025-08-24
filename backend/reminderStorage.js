@@ -236,8 +236,8 @@ export async function getUserNotifications(userId) {
       }
     }
     
-    // Sort by creation date (newest first)
-    notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Sort by creation date (oldest first)
+    notifications.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     
     return notifications;
     
